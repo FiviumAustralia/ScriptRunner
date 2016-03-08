@@ -26,7 +26,8 @@ public enum CommandLineOption {
   , OUTPUT_FILE_PATH("outfile")
   , PROMOTION_LABEL("label")
   , ADDITIONAL_PROPERTIES("props")
-  , NO_UNIMPLICATED_FILES("nounimplicatedfiles");
+  , NO_UNIMPLICATED_FILES("nounimplicatedfiles")
+  , VERIFY_LOADERS("verifyloaders");
   
   private final String mArgString;
   
