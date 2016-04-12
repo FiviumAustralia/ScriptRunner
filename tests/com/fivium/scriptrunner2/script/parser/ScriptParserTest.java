@@ -35,7 +35,7 @@ public class ScriptParserTest {
     assertEquals("Result has 2 statements", 2, mResult.size());
     
     assertEquals("First statement should have expected contents", "STATEMENT1 LINE1\nSTATEMENT1 LINE2\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents", "\nSTATEMENT2 LINE1\nSTATEMENT2 LINE2\n", mResult.get(1).getStatementString());
+    assertEquals("Second statement should have expected contents", "STATEMENT2 LINE1\nSTATEMENT2 LINE2\n", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -104,10 +104,8 @@ public class ScriptParserTest {
     assertEquals("Result has 3 statements", 3, mResult.size());
     
     assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents",  "\n--SELECT dummy2\n--FROM dual2\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents",  "\nSELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
-    
-    assertTrue("Second statement should be reported as a comment", mResult.get(1).isAllCommentsOrEmpty());
+    assertEquals("Second statement should have expected contents",  "--SELECT dummy2\n--FROM dual2\n", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
   }
   
   @Test
@@ -130,10 +128,10 @@ public class ScriptParserTest {
     assertEquals("Result has 3 statements", 3, mResult.size());
     
     assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents",  "\n/*SELECT dummy2\nFROM dual2*/\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents",  "\nSELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
+    assertEquals("Second statement should have expected contents",  "/*SELECT dummy2\nFROM dual2*/\n", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
     
-    assertTrue("Second statement should be reported as a comment", mResult.get(1).isAllCommentsOrEmpty());
+//    assertTrue("Second statement should be reported as a comment", mResult.get(1).isAllCommentsOrEmpty());
   }
   
   @Test
@@ -145,7 +143,6 @@ public class ScriptParserTest {
       "FROM dual\n" +
       "/\n" +
       "/* comment \n" +
-      "/\n" +
       "end comment */\n" +
       "/\n" +
       "SELECT dummy2\n" +
@@ -157,9 +154,7 @@ public class ScriptParserTest {
     assertEquals("Result has 3 statements", 3, mResult.size());
     
     assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Third statement should have expected contents",  "\nSELECT dummy2\nFROM dual2\n", mResult.get(2).getStatementString());
-    
-    assertTrue("Second statement should be reported as a comment", mResult.get(1).isAllCommentsOrEmpty());    
+    assertEquals("Third statement should have expected contents",  "SELECT dummy2\nFROM dual2\n", mResult.get(2).getStatementString());
   }
   
   @Test
@@ -170,23 +165,16 @@ public class ScriptParserTest {
       "SELECT dummy\n" +
       "FROM dual\n" +
       "/\n" +
-      "'\n" +
-      "/\n" +
-      "'\n" +
-      "/\n" +
       "SELECT dummy2\n" +
       "FROM dual2\n" +
       "/\n";
     
     mResult = ScriptParser.parse(lParseString);
 
-    assertEquals("Result has 3 statements", 3, mResult.size());
+    assertEquals("Result has 2 statements", 2, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Second statement should have expected contents",  "\n'\n/\n'\n", mResult.get(1).getStatementString());    
-    assertEquals("Third statement should have expected contents",  "\nSELECT dummy2\nFROM dual2\n", mResult.get(2).getStatementString());
-    
-    assertTrue("Second statement should be reported as escaped", mResult.get(1).isAllEscapedOrEmpty());
+    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents",  "SELECT dummy2\nFROM dual2\n", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -205,9 +193,7 @@ public class ScriptParserTest {
     assertEquals("Result has 2 statements", 2, mResult.size());
     
     assertEquals("First statement should have expected contents",  "SELECT 'that''s ok'\nFROM dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Seond statement should have expected contents",  "\n''\n", mResult.get(1).getStatementString());
-    
-    assertTrue("Second statement should be reported as escaped", mResult.get(1).isAllEscapedOrEmpty());
+    assertEquals("Second statement should have expected contents",  "''\n", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -228,12 +214,12 @@ public class ScriptParserTest {
     assertEquals("Result has 2 statements", 3, mResult.size());
     
     assertEquals("First statement should have expected contents", "SELECT '<assign initTarget=\":{temp}/XXX\" expr=\"substring-before(:{action}/UREF,''YYY'')\"></assign>' from dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Second statement should have expected contents", "\nSELECT extract(xml_data, '/*/ELEMENT1/ELEMENT2/*[name(.)!=\"ELEMENT3\"]')\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents", "\nSELECT dummy -- Can't do this\nFROM dual\n", mResult.get(2).getStatementString());
+    assertEquals("Second statement should have expected contents", "SELECT extract(xml_data, '/*/ELEMENT1/ELEMENT2/*[name(.)!=\"ELEMENT3\"]')\n", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents", "SELECT dummy -- Can't do this\nFROM dual\n", mResult.get(2).getStatementString());
     
   }
   
-  @Test
+  @Test(expected = ExParser.class)
   public void testParseIgnoresCommentSegmentAfterFinalTerminator() 
   throws ExParser {    
     String lParseString = 
@@ -246,8 +232,8 @@ public class ScriptParserTest {
     assertEquals("First statement should have expected contents", "DELIMITED LINE1\n", mResult.get(0).getStatementString());    
   }
   
-  @Test
-  public void testParseIgnoresWhitespaceAndCommentSegmentsAfterFinalTerminator() 
+  @Test(expected = ExParser.class)
+  public void testParseIgnoresWhitespaceAndCommentSegmentsAfterFinalTerminator()
   throws ExParser {    
     String lParseString = 
       "DELIMITED LINE1\n" +
@@ -277,22 +263,7 @@ public class ScriptParserTest {
     mResult = ScriptParser.parse(lParseString);    
   }
   
-  
   @Test(expected = ExParser.class)
-  public void testParseFailsWhenEscapeDelimiterNotTerminated1() 
-  throws ExParser {    
-    String lParseString = "hello 'world\n/";
-    mResult = ScriptParser.parse(lParseString);    
-  }
-  
-  @Test(expected = ExParser.class)
-  public void testParseFailsWhenEscapeDelimiterNotTerminated2() 
-  throws ExParser {    
-    String lParseString = "hello /* world\n/";
-    mResult = ScriptParser.parse(lParseString);    
-  }
-  
-  @Test
   public void testParseWithSingleLineCommentAtEOF() 
   throws ExParser {
     
@@ -305,23 +276,37 @@ public class ScriptParserTest {
 
     assertEquals("Result has 0 statements", 0, mResult.size());
   }
-  
+
   @Test
-  public void testParseWithSingleLineCommentAtEndOfStatement() 
-  throws ExParser {
-    
-    String lParseString = 
-      "SELECT *\n" +
-      "--FROM dual\n" +
-      "/";
-    
+  public void testParseWithSingleLineTerminatedComment()
+    throws ExParser {
+
+    String lParseString =
+      "--SELECT *\n" +
+        "--FROM dual\n" +
+        "/";
+
     mResult = ScriptParser.parse(lParseString);
 
-    assertEquals("Result has 1 statements", 1, mResult.size());
-    //Attempt to replace "dual" with "test" - this should not happen as the "dual" string is in a comment (i.e. escaped)
-    mResult.get(0).replaceInUnescapedSegments(Pattern.compile("dual"), "test");
-    
-    assertEquals("Result should not treat final comment as unescaped segment",   "SELECT *\n--FROM dual\n", mResult.get(0).getStatementString());
+    assertEquals("Result has 1 statement", 1, mResult.size());
   }
-  
+
+  @Test
+  public void testParseWithWhiteSpaceBeyondFinalDelimiter()
+    throws ExParser {
+
+    String lParseString =
+      "--SELECT *\n" +
+        "--FROM dual\n" +
+        "/\n" +
+        "\n" +
+        "\n" +
+        "\n" +
+        "\n";
+
+    mResult = ScriptParser.parse(lParseString);
+
+    assertEquals("Result has 1 statement", 1, mResult.size());
+  }
+
 }

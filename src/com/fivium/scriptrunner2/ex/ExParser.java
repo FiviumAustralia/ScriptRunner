@@ -5,6 +5,8 @@ package com.fivium.scriptrunner2.ex;
  */
 public class ExParser 
 extends ExRoot {
+
+  String mPatchPath;
   
   public ExParser() {
     super();

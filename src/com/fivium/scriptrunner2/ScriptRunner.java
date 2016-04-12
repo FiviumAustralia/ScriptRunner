@@ -267,7 +267,8 @@ implements FileResolver {
     Map<String, PatchScript> lParsedScriptMap = new HashMap<String, PatchScript>();
     //Map of patch labels to highest orders - used to verify script order is correct
     Map<String, Integer> lScriptNumberMap = new HashMap<String, Integer>();
-    
+
+    List<String> lPatchesThatRaisedExceptions = new ArrayList<String>();
     for(PromotionFile lPromotionFile : pManifestParser.getPromotionFileList()){
       if(BuiltInLoader.LOADER_NAME_PATCH.equals(lPromotionFile.getLoaderName())){
         try {
@@ -287,13 +288,24 @@ implements FileResolver {
           lScriptNumberMap.put(lScript.getPatchLabel(), lScript.getPatchNumber());
         }
         catch (ExParser e){
-          throw new ExFatalError("Could not parse patch " + lPromotionFile.getFilePath() + ": " + e.getMessage(), e);
+          lPatchesThatRaisedExceptions.add(lPromotionFile.getFilePath());
+          Logger.logError(e);
         }
         catch (IOException e){
           throw new ExFatalError("Could not parse patch " + lPromotionFile.getFilePath(), e);
         }
       }
     }
+
+    if (lPatchesThatRaisedExceptions.size() > 0) {
+      StringBuilder lErrorStringBuilder = new StringBuilder();
+      lErrorStringBuilder.append("Could not parse all patches. The following patches failed parsing:\n");
+      for (String s : lPatchesThatRaisedExceptions) {
+        lErrorStringBuilder.append("  " + s + "\n");
+      }
+      throw new ExFatalError(lErrorStringBuilder.toString());
+    }
+
     
     return lParsedScriptMap;
     

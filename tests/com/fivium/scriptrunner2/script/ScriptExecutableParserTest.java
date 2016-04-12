@@ -137,12 +137,12 @@ public class ScriptExecutableParserTest {
     assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(1)).getUserName());
     
     assertTrue("Third executable should be SQL",  mResult.get(2) instanceof ScriptSQL); 
-    assertEquals("SQL statement should have expected contents", "\n\nBEGIN\n  null;\nEND;\n", ((ScriptSQL) mResult.get(2)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "\nBEGIN\n  null;\nEND;\n", ((ScriptSQL) mResult.get(2)).getParsedSQL());
     
     assertTrue("Fourth executable should be DISCONNECT",  mResult.get(3) instanceof ScriptDisconnect);    
     
     assertTrue("Fifth executable should be SQL",  mResult.get(4) instanceof ScriptSQL); 
-    assertEquals("SQL statement should have expected contents", "\n\nINSERT STATEMENT;\n", ((ScriptSQL) mResult.get(4)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "\nINSERT STATEMENT;\n", ((ScriptSQL) mResult.get(4)).getParsedSQL());
     
     assertTrue("Sixth executable should be a COMMIT",  mResult.get(5) instanceof ScriptCommit); 
     

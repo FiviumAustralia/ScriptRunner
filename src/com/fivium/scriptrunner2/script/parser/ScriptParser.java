@@ -4,6 +4,9 @@ package com.fivium.scriptrunner2.script.parser;
 import com.fivium.scriptrunner2.Logger;
 import com.fivium.scriptrunner2.ex.ExParser;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -109,77 +112,49 @@ public class ScriptParser {
    */
   public static List<ParsedStatement> parse(String pScript)
   throws ExParser {
-    
-    String lRemainingScript = pScript;
+    BufferedReader lRemainingScriptBufferedReader = new BufferedReader(new StringReader(pScript));
+
     List<ParsedStatement> lStatementList = new ArrayList<ParsedStatement>();
-    
-    List<ScriptSegment> lCurrentStatementSegments = new ArrayList<ScriptSegment>();
     
     long lTimerOverallStart = System.currentTimeMillis();
     int lStatementCount = 0;
     Logger.logDebug("Parsing script");
-    
-    //Start with assuming that the first token to be encountered will be unescaped text
-    ScriptSegment lCurrentScriptSegment = new UnescapedTextSegment(0);
-    //Loop through the whole string, using individual segment objects to gradually deplete it. Segments deplete the buffer 
-    //until they reach a terminating character (i.e. the start or end of an escape sequence, depending on the segment type)   
+
     long lTimerStatementStart = System.currentTimeMillis();
-    do {      
-      ScriptSegment lNextScriptPart = lCurrentScriptSegment.consumeBuffer(lRemainingScript);      
-      
-      //If the previous segment managed to read something, add its contents to the current statement
-      if(!lCurrentScriptSegment.isRedundant()){
-        lCurrentStatementSegments.add(lCurrentScriptSegment);
+
+    String lCurrentLine = null;
+    StringBuilder lScriptBuilder = null;
+    // Loop through the files one line at a time creating UnescapedTextSegments as we go until a '/' is encountered.
+    // At which point, add it to the list of ParsedStatements.
+    try {
+      while ((lCurrentLine = lRemainingScriptBufferedReader.readLine()) != null) {
+        if (lCurrentLine.replaceAll("\\s+$","").equals("/")) {
+          UnescapedTextSegment lUnescapedTextSegment = new UnescapedTextSegment(0);
+          lUnescapedTextSegment.setContents(lScriptBuilder.toString());
+          List<ScriptSegment> lCurrentStatementSegments = new ArrayList<ScriptSegment>();
+          lCurrentStatementSegments.add(lUnescapedTextSegment);
+          lStatementList.add(new ParsedStatement(lCurrentStatementSegments));
+          Logger.logDebug("Parsed statement " +  ++lStatementCount + " in " + (System.currentTimeMillis() - lTimerStatementStart + " ms"));
+          lTimerStatementStart = System.currentTimeMillis();
+          lScriptBuilder = null;
+        } else {
+          if (lScriptBuilder == null) {
+            lScriptBuilder = new StringBuilder();
+          }
+          lScriptBuilder.append(lCurrentLine + "\n");
+        }
       }
-      
-      //We hit a delimiter, add the accumulated statement to the list
-      if(lCurrentScriptSegment instanceof StatementDelimiterSegment){
-        lStatementList.add(new ParsedStatement(lCurrentStatementSegments));
-        lCurrentStatementSegments = new ArrayList<ScriptSegment>();        
-        Logger.logDebug("Parsed statement " +  ++lStatementCount + " in " + (System.currentTimeMillis() - lTimerStatementStart + " ms"));        
-        lTimerStatementStart = System.currentTimeMillis();
-      }
-      
-      lCurrentScriptSegment = lNextScriptPart;
-      if(lNextScriptPart != null){
-        lRemainingScript = lRemainingScript.substring(lNextScriptPart.getStartIndex());
-      }
+    } catch (IOException ex) {
+      throw new ExParser("Failed to read script ");
     }
-    while(lRemainingScript.length() > 0 && lCurrentScriptSegment != null);
+
+    // If the script still has text beyond the final delimiter and that text is not just whitespace then error.
+    if (lScriptBuilder != null  && !lScriptBuilder.toString().trim().equals("") ) {
+      throw new ExParser("Could not parse patch: Undelimited input still in buffer at end of file:\n" + lScriptBuilder.toString());
+    }
     
     Logger.logDebug("Script parse complete in " + (System.currentTimeMillis() - lTimerOverallStart) + " ms");
-    
-    //Check there is no content at the end of the file which has not been delimited
-    if(lCurrentStatementSegments.size() > 0){
-      
-      //If there is, and trimming it reveals it to be all whitespace, or comments, this is OK - otherwise fail      
-      boolean lRealContentRemains = false;
-      StringBuilder lUndelimitedScript = new StringBuilder();
-      for(ScriptSegment lRemainingSegment : lCurrentStatementSegments) {
-      
-        lRemainingSegment.serialiseTo(lUndelimitedScript);
-        
-        if(lRemainingSegment instanceof UnescapedTextSegment){
-          if(lRemainingSegment.getContents().trim().length() > 0){
-            lRealContentRemains = true;            
-          }
-        }
-        else if(lRemainingSegment instanceof EscapedTextSegment){
-          if(!((EscapedTextSegment) lRemainingSegment).isComment()) {
-            lRealContentRemains = true;
-          }
-        }
-        
-      }
-      
-      if(lRealContentRemains) {
-        throw new ExParser("Undelimited input still in buffer at end of file:\n" + lUndelimitedScript.toString());
-      }
-      else {
-        Logger.logDebug("Script has trailing comments/whitespace at end of file which is being ignored");
-      }
-    }
-    
+
     return lStatementList;    
   }
 }

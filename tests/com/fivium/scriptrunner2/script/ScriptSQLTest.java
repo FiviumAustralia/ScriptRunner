@@ -37,48 +37,6 @@ public class ScriptSQLTest {
   }
   
   @Test
-  public void testBindParsing2() 
-  throws ExParser {
-    mScriptSQL = new ScriptSQL(getParsedStatement("SELECT ':notbind' FROM dual\n/"), true, mHashOccurrenceCounter, 0);    
-    assertEquals("0 binds should be found", 0, mScriptSQL.getBindList().size());
-  }
-  
-  @Test
-  public void testBindParsing3() 
-  throws ExParser {
-    
-    String lStatement = 
-      "SELECT :b1, -- :commentedout1\n" +
-      "FROM dual\n" +
-      "/*\n" +
-      ":commentedout2 \n" +
-      "and :commentedout3 \n" +
-      "*/\n" +
-      "WHERE dummy = :b2\n" +
-      "/";
-    
-    mScriptSQL = new ScriptSQL(getParsedStatement(lStatement), true, mHashOccurrenceCounter, 0);    
-    assertEquals("2 binds should be found", 2, mScriptSQL.getBindList().size());
-    assertEquals("First bind should have correct name", "b1", mScriptSQL.getBindList().get(0));
-    assertEquals("Second bind should have correct name", "b2", mScriptSQL.getBindList().get(1));
-  }
-  
-  @Test
-  public void testBindParsing_SingleColonsNotBinds() 
-  throws ExParser {
-    String lStatement = 
-      "DECLARE\n" + 
-      "  v1 NUMBER;\n" + 
-      "BEGIN\n" + 
-      "  v1 := :1;\n" + 
-      "END;\n" +
-      "/";
-    
-    mScriptSQL = new ScriptSQL(getParsedStatement(lStatement), true, mHashOccurrenceCounter, 0);
-    assertEquals("1 bind should be found", 1, mScriptSQL.getBindList().size());
-  }
-  
-  @Test
   public void testBindParsing_ValidBindNames() 
   throws ExParser {
     //Valid bind names
