@@ -386,87 +386,82 @@ implements FileResolver {
           }
         }
       }
-      
-      //Establish a connection to the target database
-      mDatabaseConnection = DatabaseConnection.createConnection(mCommandLineWrapper);
-      
-      //Create a new promotion controller for interfacing with the database log tables
-      mPromotionController = createPromotionController(lManifestParser.getPromotionPropertyMap().get(ManifestParser.PROMOTION_LABEL_PROPERTY));
-      
+
+      if (!hasCommandLineOption(CommandLineOption.NO_DB)) {
+        //Establish a connection to the target database
+        mDatabaseConnection = DatabaseConnection.createConnection(mCommandLineWrapper);
+
+        //Create a new promotion controller for interfacing with the database log tables
+        mPromotionController = createPromotionController(lManifestParser.getPromotionPropertyMap().get(ManifestParser.PROMOTION_LABEL_PROPERTY));
+      }
     }
     catch(Throwable th){
       //Log the stacktrack of any errors up to this point
       Logger.logError(th);
       throw th;
     }
-    
-    //*****************
-    //Start promote
-    //*****************
-    
-    boolean lSuccess = true;
-    ExFatalError lError = null;
-    try {
-      
-      boolean lStartAllowed = mPromotionController.startPromote();
-      
-      if(lStartAllowed) {      
-        //Promote all files
-        for(PromotionFile lFile : lManifestParser.getPromotionFileList()){        
-          Loader lLoader = lLoaderMap.get(lFile.getLoaderName());
-          if(lLoader instanceof PatchScriptLoader){
-            //If this is a patch, directly load the pre-parsed patch
-            ((PatchScriptLoader) lLoader).runPatchScript(this, lParsedScriptMap.get(lFile.getFilePath()));
-          }
-          else {
-            //For all other file types, load as normal
-            lLoader.promoteFile(this, lFile);  
-          }
-        }      
-      }
-    }
-    catch(ExPromote e){      
-      //Message should contain enough context, just re-raise      
-      lSuccess = false;
-      lError = new ExFatalError("Promotion failed: " + e.getMessage(), e);     
-      throw lError;
-    }
-    catch(Throwable th){
-      lSuccess = false;
-      lError = new ExFatalError("Unexpected error: " + th.getMessage(), th);
-      throw lError;
-    }
-    finally {
-      
-      //Write any error to all logs
-      if(lError != null){
-        Logger.logInfo("\n\nSERIOUS ERROR while executing ScriptRunner! Marking promotion as failed.\nSee below for error details:\n");
-        Logger.logError(lError);
-      }
-      
-      //Set the status of the promotion run to COMPLETE or FAILED, depending on if there was an error
-      try {
-        mPromotionController.endPromote(lError == null);
-      }
-      catch(Throwable th){
-        //Do not allow logging exceptions to take precedence over the original error if there was one
-        if(lError != null){
-          Logger.logInfo("Error encountered when finalising log row:\n" + th.getMessage());
-        }
-        else {
-          //If the promote succeeded but logging failed, tell the user
-          throw new ExFatalError("Error encountered when finalising log row", th);
-        }        
-      }      
-    }
 
-    //Finalise the promotion connection
-    try {
-      mDatabaseConnection.closePromoteConnection();
-    }
-    catch (Throwable th){
-      //Suppress errors caused by closing the connection
-      Logger.logWarning("Failed to close connection: " + th.getMessage());
+    boolean lSuccess = true;
+    if (!hasCommandLineOption(CommandLineOption.NO_DB)) {
+      //*****************
+      //Start promote
+      //*****************
+      ExFatalError lError = null;
+      try {
+
+        boolean lStartAllowed = mPromotionController.startPromote();
+
+        if (lStartAllowed) {
+          //Promote all files
+          for (PromotionFile lFile : lManifestParser.getPromotionFileList()) {
+            Loader lLoader = lLoaderMap.get(lFile.getLoaderName());
+            if (lLoader instanceof PatchScriptLoader) {
+              //If this is a patch, directly load the pre-parsed patch
+              ((PatchScriptLoader) lLoader).runPatchScript(this, lParsedScriptMap.get(lFile.getFilePath()));
+            } else {
+              //For all other file types, load as normal
+              lLoader.promoteFile(this, lFile);
+            }
+          }
+        }
+      } catch (ExPromote e) {
+        //Message should contain enough context, just re-raise
+        lSuccess = false;
+        lError = new ExFatalError("Promotion failed: " + e.getMessage(), e);
+        throw lError;
+      } catch (Throwable th) {
+        lSuccess = false;
+        lError = new ExFatalError("Unexpected error: " + th.getMessage(), th);
+        throw lError;
+      } finally {
+
+        //Write any error to all logs
+        if (lError != null) {
+          Logger.logInfo("\n\nSERIOUS ERROR while executing ScriptRunner! Marking promotion as failed.\nSee below for error details:\n");
+          Logger.logError(lError);
+        }
+
+        //Set the status of the promotion run to COMPLETE or FAILED, depending on if there was an error
+        try {
+          mPromotionController.endPromote(lError == null);
+        } catch (Throwable th) {
+          //Do not allow logging exceptions to take precedence over the original error if there was one
+          if (lError != null) {
+            Logger.logInfo("Error encountered when finalising log row:\n" + th.getMessage());
+          } else {
+            //If the promote succeeded but logging failed, tell the user
+            throw new ExFatalError("Error encountered when finalising log row", th);
+          }
+        }
+      }
+
+      //Finalise the promotion connection
+      try {
+        mDatabaseConnection.closePromoteConnection();
+      } catch (Throwable th) {
+        //Suppress errors caused by closing the connection
+        Logger.logWarning("Failed to close connection: " + th.getMessage());
+      }
     }
     
     return lSuccess;
@@ -476,7 +471,7 @@ implements FileResolver {
    * Formats and outputs the list of NoExecLogEntries to all loggers.
    */
   private void logNoExecResults() {    
-    if(hasCommandLineOption(CommandLineOption.NO_EXEC)){
+    if(hasCommandLineOption(CommandLineOption.NO_EXEC) && !hasCommandLineOption(CommandLineOption.NO_DB)){
       
       final String lSequenceHeader = "Sequence";
       final String lNameHeader = "Description";

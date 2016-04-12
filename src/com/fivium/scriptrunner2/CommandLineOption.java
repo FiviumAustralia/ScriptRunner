@@ -10,6 +10,7 @@ public enum CommandLineOption {
   , UPDATE("update")
   , PARSE_SCRIPTS("parse")
   , NO_EXEC("noexec")
+  , NO_DB("nodb")
   , LOG_DIRECTORY("logdir")
   , LOG_STANDARD_OUT("logstdout")
   , LOG_DEBUG("logdebug")

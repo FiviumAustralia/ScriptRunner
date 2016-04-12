@@ -61,7 +61,8 @@ public class CommandLineWrapper {
     gCommandLineOptions.addOption(CommandLineOption.SKIP_HASH_CHECK.getArgString(), false, "(Run only) Skips checking file hashes against entries the manifest");
     
     gCommandLineOptions.addOption(CommandLineOption.NO_EXEC.getArgString(), false, "(Run only) Does not execute the promote but produces output showing what would be run.");
-    
+    gCommandLineOptions.addOption(CommandLineOption.NO_DB.getArgString(), false, "(Run only) Does not connect to a database - patches are parsed and validated only.");
+
     gCommandLineOptions.addOption(CommandLineOption.PROMOTE_USER.getArgString(), true, "Specify the database user to connect as (default is " + DatabaseConnection.DEFAULT_PROMOTE_USER + ")");
     gCommandLineOptions.addOption(CommandLineOption.PROMOTE_PASSWORD.getArgString(), true, "Specify the password for the database user. If not specified this will be prompted for.");
     
