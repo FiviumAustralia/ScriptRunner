@@ -29,16 +29,6 @@ public class ScriptExecutableParserTest {
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a CONNECT",  mResult.get(0) instanceof ScriptConnect);
     assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(0)).getUserName());
-    
-    //Check semicolons
-    lScript = 
-      "CONNECT schema;\n" +
-      "/";
-        
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
-    assertEquals("Result should have 1 executable", 1, mResult.size());
-    assertTrue("Executable should be a CONNECT",  mResult.get(0) instanceof ScriptConnect);
-    assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(0)).getUserName());
   }
   
   @Test
@@ -80,7 +70,7 @@ public class ScriptExecutableParserTest {
     mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a SQL statement",  mResult.get(0) instanceof ScriptSQL);    
-    assertEquals("SQL statement should have expected contents", "BEGIN\n  null;\nEND;\n", ((ScriptSQL) mResult.get(0)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "BEGIN\n  null;\nEND;", ((ScriptSQL) mResult.get(0)).getParsedSQL());
   }
   
   @Test
@@ -101,7 +91,7 @@ public class ScriptExecutableParserTest {
     assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(0)).getUserName());
     
     assertTrue("Second executable should be SQL",  mResult.get(1) instanceof ScriptSQL); 
-    assertEquals("SQL statement should have expected contents", "\nBEGIN\n  null;\nEND;\n", ((ScriptSQL) mResult.get(1)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "BEGIN\n  null;\nEND;", ((ScriptSQL) mResult.get(1)).getParsedSQL());
     
     assertTrue("Third executable should be DISCONNECT",  mResult.get(2) instanceof ScriptDisconnect);     
   }
@@ -113,18 +103,18 @@ public class ScriptExecutableParserTest {
     String lScript = 
       "CONNECT schema2\n" +
       "/\n" +      
-      "CONNECT schema;\n" + //note semicolon
+      "CONNECT schema\n" + //note semicolon
       "BEGIN\n" +
       "  null;\n" +
       "END;\n" +
       "/\n" +
       "\n" +
-      "INSERT STATEMENT;\n" +
+      "INSERT STATEMENT\n" +
       "/\n" +
       "\n" +
-      "COMMIT;\n" +
+      "COMMIT\n" +
       "/\n" +
-      "disconnect;\n" + //note lowercase
+      "disconnect\n" + //note lowercase
       "/";
     
     mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
@@ -137,12 +127,12 @@ public class ScriptExecutableParserTest {
     assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(1)).getUserName());
     
     assertTrue("Third executable should be SQL",  mResult.get(2) instanceof ScriptSQL); 
-    assertEquals("SQL statement should have expected contents", "\nBEGIN\n  null;\nEND;\n", ((ScriptSQL) mResult.get(2)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "BEGIN\n  null;\nEND;", ((ScriptSQL) mResult.get(2)).getParsedSQL());
     
     assertTrue("Fourth executable should be DISCONNECT",  mResult.get(3) instanceof ScriptDisconnect);    
     
     assertTrue("Fifth executable should be SQL",  mResult.get(4) instanceof ScriptSQL); 
-    assertEquals("SQL statement should have expected contents", "\nINSERT STATEMENT;\n", ((ScriptSQL) mResult.get(4)).getParsedSQL());
+    assertEquals("SQL statement should have expected contents", "INSERT STATEMENT", ((ScriptSQL) mResult.get(4)).getParsedSQL());
     
     assertTrue("Sixth executable should be a COMMIT",  mResult.get(5) instanceof ScriptCommit); 
     

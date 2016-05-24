@@ -34,8 +34,8 @@ public class ScriptParserTest {
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
-    assertEquals("First statement should have expected contents", "STATEMENT1 LINE1\nSTATEMENT1 LINE2\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents", "STATEMENT2 LINE1\nSTATEMENT2 LINE2\n", mResult.get(1).getStatementString());
+    assertEquals("First statement should have expected contents", "STATEMENT1 LINE1\nSTATEMENT1 LINE2", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents", "STATEMENT2 LINE1\nSTATEMENT2 LINE2", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -50,7 +50,7 @@ public class ScriptParserTest {
     mResult = ScriptParser.parse(lParseString);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
-    assertEquals("Result has expected contents", "SELECT 'hello' \"prompt\"\nFROM dual\n", mResult.get(0).getStatementString());
+    assertEquals("Result has expected contents", "SELECT 'hello' \"prompt\"\nFROM dual", mResult.get(0).getStatementString());
   }
   
   @Test
@@ -65,7 +65,7 @@ public class ScriptParserTest {
     mResult = ScriptParser.parse(lParseString);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
-    assertEquals("Result has expected contents", "SELECT q'{hello world's end}', q\"{q \"string\"}\" \nFROM dual\n", mResult.get(0).getStatementString());
+    assertEquals("Result has expected contents", "SELECT q'{hello world's end}', q\"{q \"string\"}\" \nFROM dual", mResult.get(0).getStatementString());
   }
   
   @Test
@@ -81,7 +81,7 @@ public class ScriptParserTest {
     mResult = ScriptParser.parse(lParseString);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
-    assertEquals("Result has expected contents", "SELECT dummy --comment\nFROM dual\n/* comment */\n", mResult.get(0).getStatementString());
+    assertEquals("Result has expected contents", "SELECT dummy --comment\nFROM dual\n/* comment */", mResult.get(0).getStatementString());
   }
   
   @Test
@@ -103,9 +103,9 @@ public class ScriptParserTest {
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents",  "--SELECT dummy2\n--FROM dual2\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
+    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents",  "--SELECT dummy2\n--FROM dual2", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3", mResult.get(2).getStatementString());
   }
   
   @Test
@@ -127,9 +127,9 @@ public class ScriptParserTest {
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents",  "/*SELECT dummy2\nFROM dual2*/\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3\n", mResult.get(2).getStatementString());
+    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents",  "/*SELECT dummy2\nFROM dual2*/", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents",  "SELECT dummy3\nFROM dual3", mResult.get(2).getStatementString());
     
 //    assertTrue("Second statement should be reported as a comment", mResult.get(1).isAllCommentsOrEmpty());
   }
@@ -153,8 +153,8 @@ public class ScriptParserTest {
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Third statement should have expected contents",  "SELECT dummy2\nFROM dual2\n", mResult.get(2).getStatementString());
+    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual", mResult.get(0).getStatementString());
+    assertEquals("Third statement should have expected contents",  "SELECT dummy2\nFROM dual2", mResult.get(2).getStatementString());
   }
   
   @Test
@@ -173,8 +173,8 @@ public class ScriptParserTest {
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual\n", mResult.get(0).getStatementString());
-    assertEquals("Second statement should have expected contents",  "SELECT dummy2\nFROM dual2\n", mResult.get(1).getStatementString());
+    assertEquals("First statement should have expected contents",  "SELECT dummy\nFROM dual", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents",  "SELECT dummy2\nFROM dual2", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -192,8 +192,8 @@ public class ScriptParserTest {
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
-    assertEquals("First statement should have expected contents",  "SELECT 'that''s ok'\nFROM dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Second statement should have expected contents",  "''\n", mResult.get(1).getStatementString());
+    assertEquals("First statement should have expected contents",  "SELECT 'that''s ok'\nFROM dual", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents",  "''", mResult.get(1).getStatementString());
   }
   
   @Test
@@ -213,9 +213,9 @@ public class ScriptParserTest {
 
     assertEquals("Result has 2 statements", 3, mResult.size());
     
-    assertEquals("First statement should have expected contents", "SELECT '<assign initTarget=\":{temp}/XXX\" expr=\"substring-before(:{action}/UREF,''YYY'')\"></assign>' from dual\n", mResult.get(0).getStatementString());    
-    assertEquals("Second statement should have expected contents", "SELECT extract(xml_data, '/*/ELEMENT1/ELEMENT2/*[name(.)!=\"ELEMENT3\"]')\n", mResult.get(1).getStatementString());
-    assertEquals("Third statement should have expected contents", "SELECT dummy -- Can't do this\nFROM dual\n", mResult.get(2).getStatementString());
+    assertEquals("First statement should have expected contents", "SELECT '<assign initTarget=\":{temp}/XXX\" expr=\"substring-before(:{action}/UREF,''YYY'')\"></assign>' from dual", mResult.get(0).getStatementString());
+    assertEquals("Second statement should have expected contents", "SELECT extract(xml_data, '/*/ELEMENT1/ELEMENT2/*[name(.)!=\"ELEMENT3\"]')", mResult.get(1).getStatementString());
+    assertEquals("Third statement should have expected contents", "SELECT dummy -- Can't do this\nFROM dual", mResult.get(2).getStatementString());
     
   }
   
@@ -275,6 +275,35 @@ public class ScriptParserTest {
     mResult = ScriptParser.parse(lParseString);
 
     assertEquals("Result has 0 statements", 0, mResult.size());
+  }
+
+  @Test(expected = ExParser.class)
+  public void testParseSemiColonAtEndOfStatement()
+    throws ExParser {
+
+    String lParseString =
+      "SELECT *\n" +
+      "FROM dual;\n" +
+      "/";
+
+    mResult = ScriptParser.parse(lParseString);
+
+    assertEquals("Result has 0 statements", 0, mResult.size());
+  }
+
+  @Test
+  public void testParseSemiColonAtEndOfBlock()
+    throws ExParser {
+
+    String lParseString =
+      "BEGIN\n" +
+      "  SELECT * FROM dual;\n" +
+      "END;\n" +
+      "/";
+
+    mResult = ScriptParser.parse(lParseString);
+
+    assertEquals("Result has 1 statements", 1, mResult.size());
   }
 
   @Test

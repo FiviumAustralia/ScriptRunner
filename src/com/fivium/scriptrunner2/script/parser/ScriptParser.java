@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -20,6 +21,7 @@ public class ScriptParser {
   
   /** The pattern which delimits statements, currently a "/" on its own line. If this changes the statementDelimiterCharSearch method must also change to reflect this.  */
   static final Pattern STATEMENT_DELIMETER_PATTERN = Pattern.compile("^[ \\t]*/[ \\t]*$", Pattern.MULTILINE);
+  static final Pattern PLSQL_ANON_BLOCK_TERMINATOR = Pattern.compile("END.*;");
   
   /**
    * Character sequences which delimit escaped SQL segments.
@@ -124,22 +126,41 @@ public class ScriptParser {
 
     String lCurrentLine = null;
     StringBuilder lScriptBuilder = null;
+    int lLineNumber = 0;
+    int lStatementLineNumber = 0; // Holds the line number where a statement starts.
     // Loop through the files one line at a time creating UnescapedTextSegments as we go until a '/' is encountered.
     // At which point, add it to the list of ParsedStatements.
     try {
       while ((lCurrentLine = lRemainingScriptBufferedReader.readLine()) != null) {
+        lLineNumber++;
         if (lCurrentLine.replaceAll("\\s+$","").equals("/")) {
           UnescapedTextSegment lUnescapedTextSegment = new UnescapedTextSegment(0);
           lUnescapedTextSegment.setContents(lScriptBuilder.toString());
           List<ScriptSegment> lCurrentStatementSegments = new ArrayList<ScriptSegment>();
           lCurrentStatementSegments.add(lUnescapedTextSegment);
-          lStatementList.add(new ParsedStatement(lCurrentStatementSegments));
+
+          ParsedStatement lParsedStatement = new ParsedStatement(lCurrentStatementSegments);
+          String lUpperStatementString = lParsedStatement.getStatementString().toUpperCase();
+
+          // Get the last line of the file and set up a regex to see if it ends with END <identifier>; which is a
+          // valid case for a semi-colon terminator.
+          String[] lUpperStatementStringParts = lUpperStatementString.split("\n");
+          String lLastLine = lUpperStatementStringParts[lUpperStatementStringParts.length-1];
+          Matcher lIsAnonBlockMatcher = PLSQL_ANON_BLOCK_TERMINATOR.matcher(lLastLine);
+
+          // If the statement ends with a semi-colon and is not a PL/SQL anon block then raise an exception.
+          if (lUpperStatementString.endsWith(";") && !lIsAnonBlockMatcher.find()) {
+            throw new ExParser("Statement at line " + lStatementLineNumber + " ends with a semi-colon but it is not an anonymous block. ScriptRunner only interprets \"/\" as a statement terminator. Only the first error in this patch has been reported - there may be others.\n" + lParsedStatement.getStatementString());
+          }
+
+          lStatementList.add(lParsedStatement);
           Logger.logDebug("Parsed statement " +  ++lStatementCount + " in " + (System.currentTimeMillis() - lTimerStatementStart + " ms"));
           lTimerStatementStart = System.currentTimeMillis();
           lScriptBuilder = null;
         } else {
           if (lScriptBuilder == null) {
             lScriptBuilder = new StringBuilder();
+            lStatementLineNumber = lLineNumber;
           }
           lScriptBuilder.append(lCurrentLine + "\n");
         }

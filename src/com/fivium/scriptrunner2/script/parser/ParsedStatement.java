@@ -61,7 +61,7 @@ public class ParsedStatement {
       }      
     }
     
-    return lBuilder.toString();
+    return lBuilder.toString().trim();
   }
   
   /**

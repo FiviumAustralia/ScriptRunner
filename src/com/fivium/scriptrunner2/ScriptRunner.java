@@ -268,7 +268,7 @@ implements FileResolver {
     //Map of patch labels to highest orders - used to verify script order is correct
     Map<String, Integer> lScriptNumberMap = new HashMap<String, Integer>();
 
-    List<String> lPatchesThatRaisedExceptions = new ArrayList<String>();
+    List<PatchError> lPatchesThatRaisedExceptions = new ArrayList<PatchError>();
     for(PromotionFile lPromotionFile : pManifestParser.getPromotionFileList()){
       if(BuiltInLoader.LOADER_NAME_PATCH.equals(lPromotionFile.getLoaderName())){
         try {
@@ -288,7 +288,7 @@ implements FileResolver {
           lScriptNumberMap.put(lScript.getPatchLabel(), lScript.getPatchNumber());
         }
         catch (ExParser e){
-          lPatchesThatRaisedExceptions.add(lPromotionFile.getFilePath());
+          lPatchesThatRaisedExceptions.add(new PatchError(lPromotionFile.getFilePath(), e));
           Logger.logError(e);
         }
         catch (IOException e){
@@ -300,15 +300,13 @@ implements FileResolver {
     if (lPatchesThatRaisedExceptions.size() > 0) {
       StringBuilder lErrorStringBuilder = new StringBuilder();
       lErrorStringBuilder.append("Could not parse all patches. The following patches failed parsing:\n");
-      for (String s : lPatchesThatRaisedExceptions) {
-        lErrorStringBuilder.append("  " + s + "\n");
+      for (PatchError pe : lPatchesThatRaisedExceptions) {
+        lErrorStringBuilder.append("  " + pe + "\n");
       }
       throw new ExFatalError(lErrorStringBuilder.toString());
     }
 
-    
     return lParsedScriptMap;
-    
   }
   
   /**
@@ -324,8 +322,7 @@ implements FileResolver {
     }
     else {
       return new NoExecPromotionController(this, getDatabaseConnection(), pPromotionLabel);
-    }   
-    
+    }
   }
   
   /**
@@ -628,5 +625,28 @@ implements FileResolver {
       mWillPromote = pWillPromote;
       mDetails = pDetails;        
     }
+  }
+}
+
+class PatchError {
+  private String mPatchName;
+  private Exception mEx;
+
+  public PatchError(String patchName, Exception ex) {
+    this.mPatchName = patchName;
+    this.mEx = ex;
+  }
+
+  public String getPatchName() {
+    return this.mPatchName;
+  }
+
+  public Exception getEx() {
+    return this.mEx;
+  }
+
+  @Override
+  public String toString() {
+    return this.mPatchName + ":\n\t" + this.mEx.getMessage().split("\n")[0];
   }
 }

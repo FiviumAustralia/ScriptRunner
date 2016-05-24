@@ -47,9 +47,9 @@ extends SourceLoader {
     catch (ExParser e) {
       throw new ExFatalError("Failed to read contents of file " + pFile.getFilePath() + ": " + e.getMessage(), e);
     }
-    
+
     Logger.logDebug("Validating source file");
-    
+
     //Validate contents
     for(ScriptExecutable lExecutable : lExecutableList){
       if(!(lExecutable instanceof ScriptSQL)){
@@ -57,7 +57,7 @@ extends SourceLoader {
           "but a " + lExecutable.getDisplayString() + " command was found");
       }
     }
-    
+
     try {
       for(ScriptExecutable lExecutable : lExecutableList){
         lExecutable.execute(pScriptRunner.getDatabaseConnection());
