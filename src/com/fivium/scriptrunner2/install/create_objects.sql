@@ -344,6 +344,52 @@ ON patch_run_statements(patch_run_id)
 TABLESPACE tbsidx
 /
 
+CREATE OR REPLACE FORCE VIEW last_patch_status AS
+  WITH latest_promotion_run AS (
+    SELECT
+      pr.id
+    , pr.promotion_label
+    , pr.start_datetime
+    , pr.end_datetime
+    , pr.status
+    FROM promotion_runs pr
+    WHERE pr.start_datetime = (
+      SELECT MAX(pr2.start_datetime)
+      FROM promotion_runs pr2
+    )
+  )
+  SELECT
+    lpr.status
+  , (
+      SELECT COUNT(*)
+      FROM patch_runs pr
+      WHERE pr.promotion_run_id = lpr.id
+    ) patches_run
+  , (
+      SELECT COUNT(*)
+      FROM promotion_files pf
+      WHERE pf.promotion_run_id = lpr.id
+    ) files_deployed
+  , (
+      SELECT COUNT(*)
+      FROM all_objects ao
+      WHERE ao.status != 'VALID'
+      AND (
+        ao.owner LIKE '%MGR'
+        OR ao.owner LIKE '%ENV'
+        OR ao.owner LIKE '%BPM'
+      )
+    ) invalid_objects
+  , DECODE(TRUNC(NVL(lpr.end_datetime, SYSDATE) - lpr.start_datetime), 0, NULL, TRUNC(NVL(lpr.end_datetime, SYSDATE) - lpr.start_datetime) || 'd ')
+    || TRUNC(MOD(NVL(lpr.end_datetime, SYSDATE) - lpr.start_datetime, 1) * 24) || 'h '
+    || TRUNC(MOD(NVL(lpr.end_datetime, SYSDATE) - lpr.start_datetime, 1/24) * 24 * 60) || 'm' running_duration
+  , DECODE(TRUNC(lpr.end_datetime - lpr.start_datetime), 0, NULL, TRUNC(NVL(lpr.end_datetime, SYSDATE) - lpr.start_datetime) || 'd ')
+    || TRUNC(MOD(lpr.end_datetime - lpr.start_datetime, 1) * 24) || 'h '
+    || TRUNC(MOD(lpr.end_datetime - lpr.start_datetime, 1/24) * 24 * 60) || 'm' complete_duration
+  , lpr.promotion_label version_name
+  FROM latest_promotion_run lpr
+/
+
 CREATE OR REPLACE TRIGGER promote_ddl_trigger
 BEFORE DDL ON SCHEMA
 DECLARE
