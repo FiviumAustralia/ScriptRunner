@@ -2,3 +2,9 @@
 *.iml
 build-output/
 out/
+/bin/
+.gitignore
+build/build.xml
+.classpath
+.settings/
+.project

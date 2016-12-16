@@ -187,14 +187,9 @@ extends SourceLoader {
       else {
         //Bind a property value
         String lParamValue;
-        if(BIND_NAME_NAME.equals(lBindName)){
+        if(BIND_NAME_NAME.equals(lBindName) || BIND_NAME_PATH.equals(lBindName)){
           //Special case for the "name" property (filename)
           lParamValue = lFile.getName();
-        }
-        else if(BIND_NAME_PATH.equals(lBindName)) {
-          // Get the absolute path of the file and remove from in the the absolute path of the ScriptRunner base
-          // directory to get a relative path with the build to the file.
-          lParamValue = lFile.getAbsolutePath().replace(pScriptRunner.getBaseDirectory().getAbsolutePath(), "");
         }
         else {
           //Check property exists
