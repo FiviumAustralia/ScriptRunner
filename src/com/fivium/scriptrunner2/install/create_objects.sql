@@ -8,6 +8,34 @@ BEGIN
   SELECT COUNT(*)
   INTO l_count
   FROM dba_tablespaces
+  WHERE tablespace_name = 'NOACCESS';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "NOACCESS"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'TBSBLOB';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "TBSBLOB"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
   WHERE tablespace_name = 'TBSCLOB';
           
   IF l_count = 0 THEN
@@ -42,6 +70,28 @@ BEGIN
     EXECUTE IMMEDIATE 'CREATE TABLESPACE "TBSIDX"';
   END IF;
 END;
+/
+
+---------------------
+-- Tablespace Grants
+---------------------
+
+ALTER USER :PROMOTEUSER DEFAULT TABLESPACE noaccess
+/
+
+ALTER USER :PROMOTEUSER TEMPORARY TABLESPACE temp
+/
+
+ALTER USER :PROMOTEUSER QUOTA UNLIMITED ON tbsdata
+/
+
+ALTER USER :PROMOTEUSER QUOTA UNLIMITED ON tbsidx
+/
+
+ALTER USER :PROMOTEUSER QUOTA UNLIMITED ON tbsblob
+/
+
+ALTER USER :PROMOTEUSER QUOTA UNLIMITED ON tbsclob
 /
 
 ---------------------
