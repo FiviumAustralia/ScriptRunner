@@ -8,10 +8,178 @@ BEGIN
   SELECT COUNT(*)
   INTO l_count
   FROM dba_tablespaces
+  WHERE tablespace_name = 'DECDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "DECDATA"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'DECINDEX';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "DECINDEX"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'DECLOB';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "DECLOB"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'ENVDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "ENVDATA"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'ENVINDEX';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "ENVINDEX"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'ENVLOB';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "ENVLOB"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'LOGDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "LOGDATA"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'LOGDATA_MV';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "LOGDATA_MV"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
   WHERE tablespace_name = 'NOACCESS';
           
   IF l_count = 0 THEN
     EXECUTE IMMEDIATE 'CREATE TABLESPACE "NOACCESS"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'PORTALDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "PORTALDATA"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'PORTALINDEX';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "PORTALINDEX"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'PORTALLOB';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "PORTALLOB"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'SAVEDTABLES';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "SAVEDTABLES"';
   END IF;
 END;
 /
@@ -68,6 +236,76 @@ BEGIN
           
   IF l_count = 0 THEN
     EXECUTE IMMEDIATE 'CREATE TABLESPACE "TBSIDX"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'TBSGEOIDX';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "TBSGEOIDX"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'TBSLOGDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "TBSLOGDATA"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'TEMPTABLES';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "TEMPTABLES"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'TOOLS';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "TOOLS"';
+  END IF;
+END;
+/
+
+DECLARE
+  l_count NUMBER;
+BEGIN
+  SELECT COUNT(*)
+  INTO l_count
+  FROM dba_tablespaces
+  WHERE tablespace_name = 'WORKDATA';
+          
+  IF l_count = 0 THEN
+    EXECUTE IMMEDIATE 'CREATE TABLESPACE "WORKDATA"';
   END IF;
 END;
 /
