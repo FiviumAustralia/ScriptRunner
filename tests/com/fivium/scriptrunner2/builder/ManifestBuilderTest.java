@@ -33,7 +33,7 @@ public class ManifestBuilderTest {
     mManifestBuilder = new ManifestBuilder(new File(this.getClass().getResource("testfiles").getPath()), LABEL_TEST);    
     PrintWriter lWriter = new PrintWriter(new StringWriter());
 //    PrintWriter lWriter = new PrintWriter(System.out);
-    mManifestBuilder.buildManifest(new File(this.getClass().getResource("testfiles/ScriptRunner/additionalprops.txt").getPath()), lWriter);
+    mManifestBuilder.buildManifest(new File(this.getClass().getResource("testfiles/ScriptRunner/additionalprops.txt").getPath()), lWriter, null);
     mEntryMap = mManifestBuilder.getManifestEntryMap();
   }
   
