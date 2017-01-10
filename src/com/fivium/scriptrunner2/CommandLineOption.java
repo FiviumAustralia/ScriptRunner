@@ -30,7 +30,8 @@ public enum CommandLineOption {
   , INSTALL_PROMOTE_USER("newpromoteuser")
   , INSTALL_PROMOTE_PASSWORD("newpromotepassword")
   , NO_UNIMPLICATED_FILES("nounimplicatedfiles")
-  , VERIFY_LOADERS("verifyloaders");
+  , VERIFY_LOADERS("verifyloaders")
+  , BUILDER_FILE("builderfile");
 
   private final String mArgString;
 

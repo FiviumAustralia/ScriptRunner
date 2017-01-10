@@ -92,6 +92,8 @@ public class CommandLineWrapper {
     gCommandLineOptions.addOption(CommandLineOption.NO_UNIMPLICATED_FILES.getArgString(), false, "(Build only) Error (rather than warn) if files are found in source directory but not implicated by manifest builder rules.");
     gCommandLineOptions.addOption(CommandLineOption.VERIFY_LOADERS.getArgString(), false, "(Build only) Validate that the Loader files can be found at build time.");
     
+    gCommandLineOptions.addOption(CommandLineOption.BUILDER_FILE.getArgString(), true, "(Build only) Name of the builder config file to use.");
+    
     //gCommandLineOptions.addOption("help", false, "Prints help.");
   }
   

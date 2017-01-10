@@ -105,10 +105,13 @@ implements FileResolver {
     catch (FileNotFoundException e) {
       throw new ExFatalError("Cannot create manifest file " + lManifestDestinationFile.getAbsolutePath(), e);
     }
-          
+
+    //If there is more than one builder file, the user can specify one with the optional BUILDER_FILE argument 
+    String lBuilderFileName = mCommandLineWrapper.getOption(CommandLineOption.BUILDER_FILE);
+    
     //Construct the manifest file
     ManifestBuilder lManifestBuilder = new ManifestBuilder(mSourceDirectory, lPromotionLabel);
-    lManifestBuilder.buildManifest(lAdditionalPropsFile, lManifestDestinationWriter);
+    lManifestBuilder.buildManifest(lAdditionalPropsFile, lManifestDestinationWriter, lBuilderFileName);
     
     //Check that all files in the source directory have been implicated
     Set<String> lImplicatedManifestFilePaths = lManifestBuilder.allImplicatedFilePaths(true);

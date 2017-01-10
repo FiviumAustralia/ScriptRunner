@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,10 +187,11 @@ implements FileResolver {
    * @param pAdditionalPropertiesFile Additional properties file for providing additional properties to the build process.
    * Can be null.
    * @param pDestination Writer destination for the manifest file.
+   * @param pBuilderFileName The name of the builder file to use, if multiple are found (optional)
    * @throws ExManifestBuilder If the build process fails.
    * @throws ExParser If the configuration file cannot be parsed.
    */
-  public void buildManifest(File pAdditionalPropertiesFile, PrintWriter pDestination) 
+  public void buildManifest(File pAdditionalPropertiesFile, PrintWriter pDestination, String pBuilderFileName) 
   throws ExManifestBuilder, ExParser {
     
     //Assert the config file exists    
@@ -199,14 +201,28 @@ implements FileResolver {
     , new NameFileFilter(ScriptRunner.SCRIPTRUNNER_DIRECTORY_NAME)
     );
     
-    File lConfigFile;
-    if(lConfigFileList.size() != 1){
+    File lConfigFile = null;
+    if(pBuilderFileName != null){
+      for(Iterator<File> iter = lConfigFileList.iterator(); iter.hasNext(); ){
+        File lFile = iter.next();
+        if(lFile.getName().equals(pBuilderFileName)){
+          lConfigFile = lFile;
+          break;
+        }
+      }
+      
+      if(lConfigFile == null){
+        throw new ExManifestBuilder("No builder file found with the name " + pBuilderFileName);
+      }
+    }
+    else if(lConfigFileList.size() != 1){
       throw new ExManifestBuilder("Exactly one builder[*].cfg file should be specified but found " + lConfigFileList.size());
     }
     else {      
       lConfigFile = lConfigFileList.iterator().next();
-      Logger.logDebug("Found builder config file called " + lConfigFile.getName());
     }    
+
+    Logger.logInfo("Using builder config file called " + lConfigFile.getName());
     
     //Attempt to locate the manifest override 
     Collection<File> lManifestOverrideFileList = FileUtils.listFiles(
