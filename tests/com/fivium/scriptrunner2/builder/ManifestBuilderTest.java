@@ -22,10 +22,10 @@ public class ManifestBuilderTest {
     super();
   }
   
-  private ManifestBuilder mManifestBuilder;
-  private TreeMap<Integer, BuilderManifestEntry> mEntryMap;
+  protected ManifestBuilder mManifestBuilder;
+  protected TreeMap<Integer, BuilderManifestEntry> mEntryMap;
   
-  private static final String LABEL_TEST = "test";
+  protected static final String LABEL_TEST = "test";
   
   @Before
   public void setUp() 
