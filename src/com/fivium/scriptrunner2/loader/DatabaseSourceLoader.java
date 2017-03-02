@@ -42,7 +42,7 @@ extends SourceLoader {
 
     List<ScriptExecutable> lExecutableList;
     try {
-      lExecutableList = ScriptExecutableParser.parseScriptExecutables(lFileContents, false);
+      lExecutableList = ScriptExecutableParser.parseScriptExecutables(lFileContents, false, true);
     }
     catch (ExParser e) {
       throw new ExFatalError("Failed to read contents of file " + pFile.getFilePath() + ": " + e.getMessage(), e);

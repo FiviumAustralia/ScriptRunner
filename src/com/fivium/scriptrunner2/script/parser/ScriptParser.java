@@ -109,10 +109,11 @@ public class ScriptParser {
    * Script delimeters within escape sequences are not used to split the script. The delimiter used is a single forward slash
    * on an otherwise empty line. This mirrors the Oracle SQL*Plus client syntax.
    * @param pScript Script to split.   
+   * @param pAllowSemicolonTerminators Whether or not semicolons are allowed to terminate 
    * @return List of nested statements.
    * @throws ExParser If an escape sequence isn't terminated or if EOF is reached and unterminated input remains.
    */
-  public static List<ParsedStatement> parse(String pScript)
+  public static List<ParsedStatement> parse(String pScript, boolean pAllowSemicolonTerminators)
   throws ExParser {
     BufferedReader lRemainingScriptBufferedReader = new BufferedReader(new StringReader(pScript));
 
@@ -149,7 +150,7 @@ public class ScriptParser {
           Matcher lIsAnonBlockMatcher = PLSQL_ANON_BLOCK_TERMINATOR.matcher(lLastLine);
 
           // If the statement ends with a semi-colon and is not a PL/SQL anon block then raise an exception.
-          if (lUpperStatementString.endsWith(";") && !lIsAnonBlockMatcher.find()) {
+          if (!pAllowSemicolonTerminators && lUpperStatementString.endsWith(";") && !lIsAnonBlockMatcher.find()) {
             throw new ExParser("Statement at line " + lStatementLineNumber + " ends with a semi-colon but it is not an anonymous block. ScriptRunner only interprets \"/\" as a statement terminator. Only the first error in this patch has been reported - there may be others.\n" + lParsedStatement.getStatementString());
           }
 

@@ -241,7 +241,7 @@ extends SourceLoader {
     }
 
     try {
-      mExecutableList = ScriptExecutableParser.parseScriptExecutables(lFileContents, true);
+      mExecutableList = ScriptExecutableParser.parseScriptExecutables(lFileContents, true, false);
     }
     catch (ExParser e) {
       throw new ExFatalError("Failed to parse contents of metadata loader " + mName + ": " + e.getMessage(), e);

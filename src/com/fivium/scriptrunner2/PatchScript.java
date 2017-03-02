@@ -164,7 +164,7 @@ public class PatchScript {
     }
     
     //Split the nested scripts into individual executable scripts
-    mExecutableList = ScriptExecutableParser.parseScriptExecutables(pFileContents, false);
+    mExecutableList = ScriptExecutableParser.parseScriptExecutables(pFileContents, false, false);
     
     mPatchFileHash = pPatchFileHash;
     mPromotionSequencePosition = pPromotionSequencePosition;

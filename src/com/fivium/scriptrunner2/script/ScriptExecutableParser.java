@@ -33,14 +33,15 @@ public class ScriptExecutableParser {
    * a single statement to be composed of more than one executable part (i.e. a CONNECT followed by an anonymous block).
    * @param pScriptString Full script string to be parsed.
    * @param pAllowSQLBinds If true, statements will be parsed for bind variables.
+   * @param pAllowSQLBinds Whether or not statements cane be ended with a semicolon
    * @return List of ScriptExecutables from the given script string.
    * @throws ExParser If the input could not be parsed.
    */
-  public static List<ScriptExecutable> parseScriptExecutables(String pScriptString, boolean pAllowSQLBinds) 
+  public static List<ScriptExecutable> parseScriptExecutables(String pScriptString, boolean pAllowSQLBinds, boolean pAllowSemicolonTerminators) 
   throws ExParser {
 
     //Parse the script string into a list of parsed statements
-    List<ParsedStatement> lParsedStatementList = ScriptParser.parse(pScriptString);
+    List<ParsedStatement> lParsedStatementList = ScriptParser.parse(pScriptString, pAllowSemicolonTerminators);
     
     List<ScriptExecutable> lResult = new ArrayList<ScriptExecutable>();
     
