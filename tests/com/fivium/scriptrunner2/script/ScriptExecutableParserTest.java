@@ -8,6 +8,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 
 public class ScriptExecutableParserTest {
@@ -17,6 +19,9 @@ public class ScriptExecutableParserTest {
   
   List<ScriptExecutable> mResult;
   
+  @Rule
+  public final ExpectedException exception = ExpectedException.none();
+  
   @Test
   public void testSimpleParse_Connect() 
   throws ExParser {
@@ -25,7 +30,7 @@ public class ScriptExecutableParserTest {
       "CONNECT schema\n" +
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a CONNECT",  mResult.get(0) instanceof ScriptConnect);
     assertEquals("CONNECT should connect to correct schema", "schema", ((ScriptConnect) mResult.get(0)).getUserName());
@@ -39,7 +44,7 @@ public class ScriptExecutableParserTest {
       "DISCONNECT\n" +
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a DISCONNECT",  mResult.get(0) instanceof ScriptDisconnect);    
   }
@@ -52,7 +57,7 @@ public class ScriptExecutableParserTest {
       "COMMIT\n" +
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a COMMIT",  mResult.get(0) instanceof ScriptCommit);    
   }
@@ -67,10 +72,39 @@ public class ScriptExecutableParserTest {
       "END;\n" +
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 1 executable", 1, mResult.size());
     assertTrue("Executable should be a SQL statement",  mResult.get(0) instanceof ScriptSQL);    
     assertEquals("SQL statement should have expected contents", "BEGIN\n  null;\nEND;", ((ScriptSQL) mResult.get(0)).getParsedSQL());
+  }
+  
+  @Test
+  public void testSimpleParse_Function() 
+  throws ExParser {
+    
+    String lScript = 
+      "CREATE OR REPLACE FUNCTION some.func ("
+      + "parameter NUMBER"
+      + ") RETURN NUMBER;\n"
+      + "/";
+    
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, true);
+    assertEquals("Result should have 1 executable", 1, mResult.size());
+    assertTrue("Executable should be a SQL statement",  mResult.get(0) instanceof ScriptSQL);
+  }
+  
+  @Test
+  public void testSimpleParse_FunctionFail() 
+  throws ExParser {
+    
+    String lScript = 
+      "CREATE OR REPLACE FUNCTION some.func ("
+      + "parameter NUMBER"
+      + ") RETURN NUMBER;\n"
+      + "/";
+    
+    exception.expect(ExParser.class);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
   }
   
   @Test
@@ -84,7 +118,7 @@ public class ScriptExecutableParserTest {
       "END;\n" +
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 3 executables", 3, mResult.size());
     
     assertTrue("First executable should be a CONNECT",  mResult.get(0) instanceof ScriptConnect); 
@@ -117,7 +151,7 @@ public class ScriptExecutableParserTest {
       "disconnect\n" + //note lowercase
       "/";
     
-    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false);
+    mResult = ScriptExecutableParser.parseScriptExecutables(lScript, false, false);
     assertEquals("Result should have 7 executables", 7, mResult.size());
     
     assertTrue("First executable should be a CONNECT",  mResult.get(0) instanceof ScriptConnect); 

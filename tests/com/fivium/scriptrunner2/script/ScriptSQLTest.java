@@ -23,7 +23,7 @@ public class ScriptSQLTest {
   
   private ParsedStatement getParsedStatement(String pSQL) 
   throws ExParser {
-    List<ParsedStatement> lList = ScriptParser.parse(pSQL);
+    List<ParsedStatement> lList = ScriptParser.parse(pSQL, false);
     return lList.get(0);
   }
   

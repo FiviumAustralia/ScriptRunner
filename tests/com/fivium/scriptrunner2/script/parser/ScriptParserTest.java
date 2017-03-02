@@ -30,7 +30,7 @@ public class ScriptParserTest {
       "STATEMENT2 LINE2\n" +
       "/";
 
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
@@ -47,7 +47,7 @@ public class ScriptParserTest {
       "FROM dual\n" +
       "/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
     assertEquals("Result has expected contents", "SELECT 'hello' \"prompt\"\nFROM dual", mResult.get(0).getStatementString());
@@ -62,7 +62,7 @@ public class ScriptParserTest {
       "FROM dual\n" +
       "/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
     assertEquals("Result has expected contents", "SELECT q'{hello world's end}', q\"{q \"string\"}\" \nFROM dual", mResult.get(0).getStatementString());
@@ -78,7 +78,7 @@ public class ScriptParserTest {
       "/* comment */\n" +
       "/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
     assertEquals("Result has expected contents", "SELECT dummy --comment\nFROM dual\n/* comment */", mResult.get(0).getStatementString());
@@ -99,7 +99,7 @@ public class ScriptParserTest {
       "FROM dual3\n" +
       "/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
@@ -123,7 +123,7 @@ public class ScriptParserTest {
       "FROM dual3\n" +
       "/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
@@ -149,7 +149,7 @@ public class ScriptParserTest {
       "FROM dual2\n" +
       "/\n";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 3 statements", 3, mResult.size());
     
@@ -169,7 +169,7 @@ public class ScriptParserTest {
       "FROM dual2\n" +
       "/\n";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
@@ -188,7 +188,7 @@ public class ScriptParserTest {
       "''\n" +
       "/\n";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 2 statements", 2, mResult.size());
     
@@ -209,7 +209,7 @@ public class ScriptParserTest {
       "FROM dual\n" +
       "/";
      
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 2 statements", 3, mResult.size());
     
@@ -226,7 +226,7 @@ public class ScriptParserTest {
       "DELIMITED LINE1\n" +
       "/\n" +
       "/* UNDELIMITED LINE1\n */";
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
     
     assertEquals("Result has 1 statements", 1, mResult.size());
     assertEquals("First statement should have expected contents", "DELIMITED LINE1\n", mResult.get(0).getStatementString());    
@@ -239,7 +239,7 @@ public class ScriptParserTest {
       "DELIMITED LINE1\n" +
       "/\n" +
       "\n  /* comment */ \n\n  \t   \t /*comment*/";
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
     
     assertEquals("Result has 1 statements", 1, mResult.size());
     assertEquals("First statement should have expected contents", "DELIMITED LINE1\n", mResult.get(0).getStatementString());    
@@ -250,7 +250,7 @@ public class ScriptParserTest {
   public void testParseFailsWhenNoFinalDelimiter1() 
   throws ExParser {    
     String lParseString = "UNDELIMITED LINE1\n";
-    mResult = ScriptParser.parse(lParseString);    
+    mResult = ScriptParser.parse(lParseString, false);    
   }
   
   @Test(expected = ExParser.class)
@@ -260,7 +260,7 @@ public class ScriptParserTest {
       "DELIMITED LINE1\n" +
       "/\n" +
       "UNDELIMITED LINE1\n";
-    mResult = ScriptParser.parse(lParseString);    
+    mResult = ScriptParser.parse(lParseString, false);    
   }
   
   @Test(expected = ExParser.class)
@@ -272,7 +272,7 @@ public class ScriptParserTest {
       "--FROM dual\n" +
       "--/";
     
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 0 statements", 0, mResult.size());
   }
@@ -286,7 +286,7 @@ public class ScriptParserTest {
       "FROM dual;\n" +
       "/";
 
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 0 statements", 0, mResult.size());
   }
@@ -301,7 +301,7 @@ public class ScriptParserTest {
       "END;\n" +
       "/";
 
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statements", 1, mResult.size());
   }
@@ -315,7 +315,7 @@ public class ScriptParserTest {
         "--FROM dual\n" +
         "/";
 
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
   }
@@ -333,7 +333,7 @@ public class ScriptParserTest {
         "\n" +
         "\n";
 
-    mResult = ScriptParser.parse(lParseString);
+    mResult = ScriptParser.parse(lParseString, false);
 
     assertEquals("Result has 1 statement", 1, mResult.size());
   }
